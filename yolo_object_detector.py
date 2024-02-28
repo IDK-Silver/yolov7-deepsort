@@ -18,22 +18,6 @@ from PIL import Image
 torch.backends.cudnn.enabled = False
 
 
-class YOLO_Result:
-    def __init__(self):
-        self.conf: float = 0.
-        self.cls: int = 0
-        self.points: typing.List[int, int, int, int] = []
-
-    def decode(self, data: list):
-        data = np.array(data)
-
-        if data.ndim >= 2:
-            print(f"can't decode list of result")
-            exit(-1)
-
-        self.points, self.conf, self.points = data
-
-
 class YOLO_Detector:
     def __init__(
             self, conf: float = 0.6, conf_threshold: float = 0.25,
@@ -196,7 +180,7 @@ if __name__ == "__main__":
     result = det.detect('./example/image/cat_image.jpg', plot=True)
 
     *points, conf, cls = det.detect('./example/image/cat_image.jpg', plot=False)[0]
-
+    print(det.detect('./example/image/cat_image.jpg'))
     print(points, conf, cls)
 
     cv2.imwrite('cat.jpg', result)
