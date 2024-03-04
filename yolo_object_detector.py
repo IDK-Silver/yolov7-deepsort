@@ -1,18 +1,15 @@
 import random
-
 import typing
 import cv2
 import numpy
 import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
-
 from utils.datasets import letterbox
 from utils.torch_utils import select_device, TracedModel
 from models.experimental import attempt_load
 from utils.general import non_max_suppression, scale_coords, check_img_size
 from utils.plots import plot_one_box
-from PIL import Image
 
 # for GTX 1650 ti
 torch.backends.cudnn.enabled = False
@@ -127,13 +124,13 @@ class YOLO_Detector:
                 image.shape[2:], detection[:, :4], original_image.shape
             ).round()
 
-            for *points, conf, cls in reversed(detection):
+            for *det_points, det_conf, det_cls in reversed(detection):
                 if plot:
-                    label = f'{self.names[int(cls)]} {conf:.2f}'
+                    label = f'{self.names[int(det_cls)]} {det_conf:.2f}'
 
                     plot_one_box(
-                        points, original_image, label=label,
-                        color=self.colors[int(cls)], line_thickness=2
+                        det_points, original_image, label=label,
+                        color=self.colors[int(det_cls)], line_thickness=2
                     )
 
             if plot:
@@ -169,21 +166,3 @@ class YOLO_Detector:
         image = np.ascontiguousarray(image)
 
         return image, original_image
-
-
-if __name__ == "__main__":
-    det = YOLO_Detector()
-    det.load_model('dog_cat_best.pt')
-    # det.detect('cat_image.jpg')
-    # Pass in any image path or Numpy Image using 'BGR' format
-    # plot_bb = False output the predictions as [x,y,w,h, confidence, class]
-    result = det.detect('./example/image/cat_image.jpg', plot=True)
-
-    *points, conf, cls = det.detect('./example/image/cat_image.jpg', plot=False)[0]
-    print(det.detect('./example/image/cat_image.jpg'))
-    print(points, conf, cls)
-
-    cv2.imwrite('cat.jpg', result)
-
-    if len(result.shape) == 3:  # If it is image, convert it to proper image. detector will give "BGR" image
-        result = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_BGR2RGB))
