@@ -53,7 +53,6 @@ def butter_lowpass_filtfilt(data, cutoff=1500, fs=50000, order=5):
     b, a = butter_lowpass(cutoff, fs, order=order)
     return filtfilt(b, a, data)  # forward-backward filter
 
-
 def plot_one_box(x, img, color=None, label=None, line_thickness=3):
     # Plots one bounding box on image img
     tl = line_thickness or round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
@@ -63,9 +62,19 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
     if label:
         tf = max(tl - 1, 1)  # font thickness
         t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
-        c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+        font_size = t_size[1]
+        font = ImageFont.truetype(r"utils/NotoSansTC-Regular.otf", font_size, encoding="utf-8")
+
+        # in Pillow 10, using this method to get font size
+        font_box = font.getbbox(label)
+        t_size = (font_box[2], font_box[3])
+        c2 = c1[0] + t_size[0], c1[1] - t_size[1]
         cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
-        cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        draw = ImageDraw.Draw(img)
+        draw.text((c1[0], c2[1]), label, (255, 255, 255), font=font)
+        # cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+        return cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
 
 
 def plot_one_box_PIL(box, img, color=None, label=None, line_thickness=None):

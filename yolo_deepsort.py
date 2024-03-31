@@ -1,6 +1,5 @@
-from typing import List, Union
+from typing import Union
 import torch
-import torch.backends.cudnn as cudnn
 import cv2
 import numpy as np
 
@@ -89,8 +88,6 @@ class YOLO_DeepSORT:
                     ]
                 )
 
-            labels = np.array(labels)
-
             features = self.encoder(frame, points_datas)
 
             deepsort_detections = []
@@ -115,7 +112,7 @@ class YOLO_DeepSORT:
 
                 color = colors[int(track.track_id) % len(colors)]
 
-                plot_one_box(
+                frame = plot_one_box(
                     track_points, frame, label=(self.names[int(track_cls)] + ', id ' + str(int(track.track_id))),
                     color=color, line_thickness=2
                 )

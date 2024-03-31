@@ -17,8 +17,9 @@ torch.backends.cudnn.enabled = False
 
 class YOLO_Detector:
     def __init__(
-            self, conf: float = 0.6, conf_threshold: float = 0.25,
-            iou_threshold: float = 0.45, classes: list = None
+            self, conf: float = 0.25, conf_threshold: float = 0.25,
+            iou_threshold: float = 0.45, classes: list = None,
+            names: typing.List[str] = None
     ):
         self.device = select_device(
             "0" if torch.cuda.is_available()
@@ -29,7 +30,7 @@ class YOLO_Detector:
         self.model: typing.Union[torch.Module, TracedModel, None] = None
         self.image_size = 0
         self.model_classify = None
-        self.names: list = []
+        self.names: list = names
         self.colors: list = []
         self.half_precision = False
         self.conf_threshold = conf_threshold
@@ -79,11 +80,13 @@ class YOLO_Detector:
         # hasattr(object,name) in python checks
         # if some object has an attribute with 'name'
         # in this case, self.model's type is TraceModel, not has attribute with module
-        self.names = self.model.module.names if hasattr(self.model, 'module') else self.model.names
+
+        if self.names is None:
+            self.names = self.model.module.names if hasattr(self.model, 'module') else self.model.names
 
         # random color for box
         self.colors = [
-            [random.randint(0, 255) for _ in range(3)]
+            [random.randint(0, 255) for _ in range(3)] for _ in range(len(self.names))
         ]
 
     @torch.no_grad()
@@ -128,7 +131,7 @@ class YOLO_Detector:
                 if plot:
                     label = f'{self.names[int(det_cls)]} {det_conf:.2f}'
 
-                    plot_one_box(
+                    original_image = plot_one_box(
                         det_points, original_image, label=label,
                         color=self.colors[int(det_cls)], line_thickness=2
                     )
