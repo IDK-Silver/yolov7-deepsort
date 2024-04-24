@@ -5,7 +5,6 @@ import cv2
 import numpy
 import numpy as np
 import torch
-import torch.backends.cudnn as cudnn
 from .models.utils.datasets import letterbox
 from .models.utils.torch_utils import select_device, TracedModel
 from .models.experimental import attempt_load
