@@ -2,14 +2,14 @@
 
 ## 簡介
 
-> 一個簡易包裝過的 Library for YOLO + DeepSORT
+> 一個簡易包裝過的 Library for YOLOv7 + DeepSORT
 >
 > 此 Library 有修改過 DeepSORT 的 source code
 
 
 ## 使用範例
 
-### YOLO
+### YOLOv7
 
 ```python
 # detector_example.py
@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
 ```
 
-### YOLO + DeepSORT
+### YOLOv7 + DeepSORT
 
 ```python
 # tracker_example.py
