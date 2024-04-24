@@ -12,7 +12,7 @@
 ### YOLO
 
 ```python
-# yolo_example.py
+# detector_example.py
 from yolo_object_detector import YOLO_Detector
 import cv2
 from PIL import Image
