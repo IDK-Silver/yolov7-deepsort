@@ -58,7 +58,15 @@ class YOLOv7_Detector:
         self.stride = int(self.model.stride.max())  # model stride
         self.image_size = check_img_size(image_size, s=self.stride)  # check img_size
 
-        # using trace model
+        #  using trace model
+        #  When you run detect with trace, the YOLOv7 model is first converted to a traced model,
+        #  which is a static representation of the model graph optimized for inference.
+        #  This traced model is then used for inference. The conversion process eliminates the overhead of creating the
+        #  computation graph and executing operations, resulting in faster inference times
+        #  compared to detecting without trace.
+        #  using the traced model will generally result in faster inference times but
+        #  the conversion process takes some time.
+        #  https://www.reddit.com/r/computervision/comments/10mqrb9/yolov7_models/
         self.model = TracedModel(self.model, self.device, image_size)
 
         # enable using half float
